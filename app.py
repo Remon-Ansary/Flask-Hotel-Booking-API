@@ -110,20 +110,35 @@ def locationFilter(locationValue):
 
     return {"count": len(results), "data":results}
 
-@app.route('/location/desc', methods=['GET'])
-def locationDesc():
-    cars = CarsModel.query.order_by(asc(CarsModel.location)).all()
-    results = [
-        {
-            "title": car.title,
-            "price": car.price,
-            "rating": car.rating,
-            "location": car.location,
-            "amenities": car.amenities,
-            "image": car.image
-        } for car in cars]
 
-    return {"count ": len(results), "data":results}
+@app.route('/price', methods=['GET'])
+def pricedesc():
+    pricesort = request.args.get('sort')
+    if pricesort == 'asc':
+        cars = CarsModel.query.order_by(asc(CarsModel.price)).all()
+        results = [
+            {
+                "title": car.title,
+                "price": car.price,
+                "rating": car.rating,
+                "location": car.location,
+                "amenities": car.amenities,
+                "image": car.image
+            } for car in cars]
+        return {"count": len(results), "data":results}
+    
+    else:
+            cars = CarsModel.query.order_by(desc(CarsModel.price)).all()
+            results = [
+                {
+                    "title": car.title,
+                    "price": car.price,
+                    "rating": car.rating,
+                    "location": car.location,
+                    "amenities": car.amenities,
+                    "image": car.image
+                } for car in cars]
+            return {"count": len(results), "data":results}
 
 
 if __name__ == '__main__':

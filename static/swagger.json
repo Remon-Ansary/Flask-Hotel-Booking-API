@@ -106,7 +106,7 @@
             }
           }
         },
-        "/todolist/{id}": {
+        "/title/": {
           "get": {
             "tags": ["Get todos from API"],
             "summary": "Get todos",
