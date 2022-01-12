@@ -1,6 +1,8 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from sqlalchemy import desc
+from sqlalchemy.sql.expression import asc
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:root@localhost:5432/Scrapydata1"
@@ -27,9 +29,12 @@ class CarsModel(db.Model):
         self.amenities = amenities
         self.image = image
 
-    def __repr__(self):
-        return f"<newdata {self.ttle}>"
-@app.route('/cars', methods=['POST', 'GET'])
+    # def __repr__(self):
+    #     return f"<newdata {self.ttle}>"
+
+
+
+@app.route('/', methods=['POST', 'GET'])
 def handle_cars():
     if request.method == 'POST':
         if request.is_json:
@@ -53,7 +58,56 @@ def handle_cars():
                 "image": car.image
             } for car in cars]
 
-        return {"count": len(results), "cars": results}
+        return {"count ": len(results), "data":results}
+
+
+
+@app.route('/title/<string:titlevalue>', methods=['GET'])
+def titleFilter(titlevalue):
+    cars = CarsModel.query.filter_by(title=titlevalue).all()
+    results = [
+        {
+            "title": car.title,
+            "price": car.price,
+            "rating": car.rating,
+            "location": car.location,
+            "amenities": car.amenities,
+            "image": car.image
+        } for car in cars]
+
+    return {"count ": len(results), "data":results}
+
+
+@app.route('/location/<string:locationValue>', methods=['GET'])
+def locationFilter(locationValue):
+    cars = CarsModel.query.filter_by(location=locationValue).all()
+    results = [
+        {
+            "title": car.title,
+            "price": car.price,
+            "rating": car.rating,
+            "location": car.location,
+            "amenities": car.amenities,
+            "image": car.image
+        } for car in cars]
+
+    return {"count ": len(results), "data":results}
+
+@app.route('/location/desc', methods=['GET'])
+def locationDesc():
+    cars = CarsModel.query.order_by(asc(CarsModel.location)).all()
+    results = [
+        {
+            "title": car.title,
+            "price": car.price,
+            "rating": car.rating,
+            "location": car.location,
+            "amenities": car.amenities,
+            "image": car.image
+        } for car in cars]
+
+    return {"count ": len(results), "data":results}
+
 
 
 if __name__ == '__main__':
