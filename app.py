@@ -3,12 +3,27 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import asc
+from flask_swagger_ui import get_swaggerui_blueprint
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:root@localhost:5432/Scrapydata1"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+
+# flask swagger configs
+SWAGGER_URL = '/swagger'
+API_URL = '/static/swagger.json'
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "Database API"
+    }
+)
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
+
 
 class CarsModel(db.Model):
     __tablename__ = 'newdata'
@@ -62,9 +77,11 @@ def handle_cars():
 
 
 
-@app.route('/title/<string:titlevalue>', methods=['GET'])
-def titleFilter(titlevalue):
+@app.route('/title', methods=['GET'])
+def titleFilter():
+    titlevalue = request.args.get('title')
     cars = CarsModel.query.filter_by(title=titlevalue).all()
+
     results = [
         {
             "title": car.title,
@@ -91,7 +108,7 @@ def locationFilter(locationValue):
             "image": car.image
         } for car in cars]
 
-    return {"count ": len(results), "data":results}
+    return {"count": len(results), "data":results}
 
 @app.route('/location/desc', methods=['GET'])
 def locationDesc():
@@ -107,7 +124,6 @@ def locationDesc():
         } for car in cars]
 
     return {"count ": len(results), "data":results}
-
 
 
 if __name__ == '__main__':
