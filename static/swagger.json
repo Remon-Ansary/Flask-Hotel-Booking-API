@@ -162,14 +162,24 @@
         }
       }
     },
-    "/title?title={title}": {
+    "/find": {
       "get": {
         "tags": ["Get All Search data from API"],
         "summary": "Get All data",
         "parameters": [
           {
             "name": "title",
-            "in": "path",
+            "in": "query",
+            "description": "todo id to update",
+            "required": false,
+            "type": "string",
+            "schema": {
+              "$ref": "#/components/schemas/title"
+            }
+          },
+          {
+            "name": "location",
+            "in": "query",
             "description": "todo id to update",
             "required": false,
             "type": "string",
@@ -207,7 +217,7 @@
             "required": true,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/name"
+              "$ref": "#/components/schemas/title"
             }
           }
         ],

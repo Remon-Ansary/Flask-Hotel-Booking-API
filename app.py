@@ -33,7 +33,7 @@ ma = Marshmallow(app)
 
 
 
-class CarsModel(db.Model):
+class HotelModel(db.Model):
     __tablename__ = 'newdata'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -54,14 +54,14 @@ class CarsModel(db.Model):
 
 
 # create db schema class
-class CarsModelSchema(ma.Schema):
+class HotelModelSchema(ma.Schema):
     class Meta:
         fields = ('id', 'title', 'price', 'rating', 'location', 'amenities', 'image')
 
 
 # instantiate schema objects for todolist and todolists
-CarsModel_Schema = CarsModelSchema(many=False)
-CarsModel_Schema = CarsModelSchema(many=True)
+HotelModel_Schema = HotelModelSchema(many=False)
+HotelModel_Schema = HotelModelSchema(many=True)
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -69,7 +69,7 @@ def handle_cars():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            new_car = CarsModel(title=data['title'], price=data['price'], rating=data['rating'], location=data['location'], amenities=data['amenities'], image=data['image'])
+            new_car = HotelModel(title=data['title'], price=data['price'], rating=data['rating'], location=data['location'], amenities=data['amenities'], image=data['image'])
             db.session.add(new_car)
             db.session.commit()
             return {"message": f"car {new_car.title} has been created successfully."}
@@ -77,7 +77,7 @@ def handle_cars():
             return {"error": "The request payload is not in JSON format"}
 
     elif request.method == 'GET':
-        cars = CarsModel.query.all()
+        cars = HotelModel.query.all()
         results = [
             {
                 "title": car.title,
@@ -91,20 +91,29 @@ def handle_cars():
         return {"count ": len(results), "data":results}
 
 
-@app.route('/title', methods=['GET'])
+@app.route('/find', methods=['GET'])
 def titleFilter():
+    
     titlevalue = request.args.get('title')
-    cars = CarsModel.query.filter_by(title=titlevalue).all()
-
+    locationValue = request.args.get('location')
+    if None not in (titlevalue, locationValue):
+        cars = HotelModel.query.filter_by(title=titlevalue, location=locationValue).all()
+    elif titlevalue is not None:
+        cars = HotelModel.query.filter_by(title=titlevalue).all()
+    elif locationValue is not None:
+        cars = HotelModel.query.filter_by(location=locationValue).all()
+    else:
+        cars = HotelModel.query.all()
+    
     results = [
-        {
-            "title": car.title,
-            "price": car.price,
-            "rating": car.rating,
-            "location": car.location,
-            "amenities": car.amenities,
-            "image": car.image
-        } for car in cars]
+    {
+        "title": car.title,
+        "price": car.price,
+        "rating": car.rating,
+        "location": car.location,
+        "amenities": car.amenities,
+        "image": car.image
+    } for car in cars]
 
     return {"count ": len(results), "data":results}
 
@@ -112,7 +121,7 @@ def titleFilter():
 @app.route('/location', methods=['GET'])
 def locationFilter():
     locationValue = request.args.get('location')
-    cars = CarsModel.query.filter_by(location=locationValue).all()
+    cars = HotelModel.query.filter_by(location=locationValue).all()
     results = [
         {
             "title": car.title,
@@ -126,11 +135,14 @@ def locationFilter():
     return {"count": len(results), "data":results}
 
 
+
+
+
 @app.route('/price', methods=['GET'])
 def pricedesc():
     pricesort = request.args.get('sort')
     if pricesort == 'asc':
-        cars = CarsModel.query.order_by(asc(CarsModel.price)).all()
+        cars = HotelModel.query.order_by(asc(HotelModel.price)).all()
         results = [
             {
                 "title": car.title,
@@ -143,7 +155,7 @@ def pricedesc():
         return {"count": len(results), "data":results}
     
     else:
-            cars = CarsModel.query.order_by(desc(CarsModel.price)).all()
+            cars = HotelModel.query.order_by(desc(HotelModel.price)).all()
             results = [
                 {
                     "title": car.title,
