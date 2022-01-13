@@ -22,7 +22,7 @@
   ],
   "components": {
     "schemas": {
-      "CarsModel": {
+      "HotelModel": {
         "type": "object",
         "properties": {
           "amenities": {
@@ -44,68 +44,6 @@
             "type": "string"
           }
         }
-      },
-      "title": {
-        "type": "string",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "price": {
-        "type": "string",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "rating": {
-        "type": "string",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "location": {
-        "type": "string",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "image": {
-        "type": "string",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "amenities": {
-        "type": "string",
-        "properties": {
-          "name": {
-            "type": "string"
-          }
-        }
-      },
-      "update": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "completed": {
-            "type": "boolean"
-          }
-        }
       }
     }
   },
@@ -120,7 +58,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CarsModel"
+                "$ref": "#/components/schemas/HotelModel"
               }
             }
           }
@@ -129,13 +67,13 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/CarsModel"
+              "$ref": "#/components/schemas/HotelModel"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/CarsModel"
+              "$ref": "#/components/schemas/HotelModel"
             }
           }
         }
@@ -147,13 +85,13 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/CarsModel"
+              "$ref": "#/components/schemas/HotelModel"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/CarsModel"
+              "$ref": "#/components/schemas/HotelModel"
             }
           }
         }
@@ -171,7 +109,7 @@
             "required": false,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/title"
+              "$ref": "#/components/schemas/HotelModel/properties/title"
             }
           },
           {
@@ -181,7 +119,7 @@
             "required": false,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/title"
+              "$ref": "#/components/schemas/HotelModel/properties/location"
             }
           },
           {
@@ -191,7 +129,7 @@
             "required": false,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/title"
+              "$ref": "#/components/schemas/HotelModel/properties/amenities"
             }
           },
 
@@ -202,7 +140,7 @@
             "required": false,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/title"
+              "$ref": "#/components/schemas/HotelModel/properties/price"
             }
           },
           {
@@ -212,7 +150,7 @@
             "required": false,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/title"
+              "$ref": "#/components/schemas/HotelModel/properties/price"
             }
           }
         ],
@@ -220,13 +158,13 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/CarsModel"
+              "$ref": "#/components/schemas/HotelModel"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/CarsModel"
+              "$ref": "#/components/schemas/HotelModel"
             }
           }
         }

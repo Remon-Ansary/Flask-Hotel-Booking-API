@@ -5,7 +5,11 @@ from flask_migrate import Migrate
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import asc
 from flask_swagger_ui import get_swaggerui_blueprint
-
+import uuid # for public id
+from  werkzeug.security import generate_password_hash, check_password_hash
+import jwt
+from datetime import datetime, timedelta
+from functools import wraps
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:root@localhost:5432/Scrapydata1"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -65,31 +69,31 @@ HotelModel_Schema = HotelModelSchema(many=True)
 
 
 @app.route('/', methods=['POST', 'GET'])
-def handle_cars():
+def handle_hotels():
     if request.method == 'POST':
         if request.is_json:
             data = request.get_json()
-            new_car = HotelModel(title=data['title'], price=data['price'], rating=data['rating'], location=data['location'], amenities=data['amenities'], image=data['image'])
-            db.session.add(new_car)
+            new_hotel = HotelModel(title=data['title'], price=data['price'], rating=data['rating'], location=data['location'], amenities=data['amenities'], image=data['image'])
+            db.session.add(new_hotel)
             db.session.commit()
-            return {"message": f"car {new_car.title} has been created successfully."}
+            return {"message": f"hotel {new_hotel.title} has been created successfully."}
         else:
             return {"error": "The request payload is not in JSON format"}
 
     elif request.method == 'GET':
-        cars = HotelModel.query.all()
+        hotels = HotelModel.query.all()
         results = [
             {
-                "title": car.title,
-                "price": car.price,
-                "rating": car.rating,
-                "location": car.location,
-                "amenities": car.amenities,
-                "image": car.image
-            } for car in cars]
+                "title": hotel.title,
+                "price": hotel.price,
+                "rating": hotel.rating,
+                "location": hotel.location,
+                "amenities": hotel.amenities,
+                "image": hotel.image
+            } for hotel in hotels]
 
         return {"count ": len(results), "data":results}
-
+    
 
 @app.route('/find', methods=['GET'])
 def titleFilter():
@@ -102,31 +106,32 @@ def titleFilter():
     amenities = "%{}%".format(amenitiesValue)
     priceValueformat = "%{}%".format(priceValue1)
     if None not in (titlevalue, locationValue):
-        cars = HotelModel.query.filter_by(title=titlevalue, location=locationValue).all()
+        hotels = HotelModel.query.filter_by(title=titlevalue,location=locationValue,price = priceValue).all()
+    
     elif titlevalue is not None:
-        cars = HotelModel.query.filter_by(title=titlevalue).all()
+        hotels = HotelModel.query.filter_by(title=titlevalue).all()
     elif locationValue is not None:
-        cars = HotelModel.query.filter_by(location=locationValue).all()
+        hotels = HotelModel.query.filter_by(location=locationValue).all()
     elif amenitiesValue is not None:
-        cars = HotelModel.query.filter(HotelModel.amenities.like(amenities)).all()
+        hotels = HotelModel.query.filter(HotelModel.amenities.like(amenities)).all()
     elif priceValue1 is not None:
-        cars = HotelModel.query.filter(HotelModel.price.like(priceValueformat)).all()
+        hotels = HotelModel.query.filter(HotelModel.price.like(priceValueformat)).all()
     elif priceValue == 'asc':
-         cars = HotelModel.query.order_by(asc(HotelModel.price)).all()
+         hotels = HotelModel.query.order_by(asc(HotelModel.price)).all()
     elif priceValue == 'desc':
-        cars = HotelModel.query.order_by(desc(HotelModel.price)).all()
+        hotels = HotelModel.query.order_by(desc(HotelModel.price)).all()
     else:
-        cars = HotelModel.query.all()
+        hotels = HotelModel.query.all()
     
     results = [
     {
-        "title": car.title,
-        "price": car.price,
-        "rating": car.rating,
-        "location": car.location,
-        "amenities": car.amenities,
-        "image": car.image
-    } for car in cars]
+        "title": hotel.title,
+        "price": hotel.price,
+        "rating": hotel.rating,
+        "location": hotel.location,
+        "amenities": hotel.amenities,
+        "image": hotel.image
+    } for hotel in hotels]
 
     return {"count ": len(results), "data":results}
 
@@ -134,16 +139,16 @@ def titleFilter():
 @app.route('/location', methods=['GET'])
 def locationFilter():
     locationValue = request.args.get('location')
-    cars = HotelModel.query.filter_by(location=locationValue).all()
+    hotels = HotelModel.query.filter_by(location=locationValue).all()
     results = [
         {
-            "title": car.title,
-            "price": car.price,
-            "rating": car.rating,
-            "location": car.location,
-            "amenities": car.amenities,
-            "image": car.image
-        } for car in cars]
+            "title": hotel.title,
+            "price": hotel.price,
+            "rating": hotel.rating,
+            "location": hotel.location,
+            "amenities": hotel.amenities,
+            "image": hotel.image
+        } for hotel in hotels]
 
     return {"count": len(results), "data":results}
 
