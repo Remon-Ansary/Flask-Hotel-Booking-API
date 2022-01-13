@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "description": "Code With Prince",
+    "description": "Hotel Booking API",
     "version": "1.0.0",
-    "title": "Code With Prince Flask API Tutorial",
+    "title": "Hotel Booking API",
     "license": {
       "name": "MIT",
       "url": "https://opensource.org/licenses/MIT"
@@ -25,14 +25,27 @@
       "CarsModel": {
         "type": "object",
         "properties": {
-          "name": {
+          "amenities": {
             "type": "string"
           },
-          "description": {
+          "image": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "string"
+          },
+          "title": {
             "type": "string"
           }
         }
       },
+
       "title": {
         "type": "string",
         "properties": {
@@ -101,10 +114,10 @@
   "paths": {
     "/": {
       "post": {
-        "tags": ["Add todo to API"],
-        "summary": "Add todo",
+        "tags": ["Add Data"],
+        "summary": "Add Data",
         "requestBody": {
-          "description": "Post New todo To Database",
+          "description": "Post new data to",
           "required": true,
           "content": {
             "application/json": {
@@ -130,8 +143,8 @@
         }
       },
       "get": {
-        "tags": ["Get All todos from API"],
-        "summary": "Get All todos",
+        "tags": ["Get All Data"],
+        "summary": "Get All Data",
 
         "responses": {
           "200": {
@@ -151,17 +164,17 @@
     },
     "/title?title={title}": {
       "get": {
-        "tags": ["Get All todos from API"],
-        "summary": "Get All todos",
+        "tags": ["Get All Search data from API"],
+        "summary": "Get All data",
         "parameters": [
           {
             "name": "title",
             "in": "path",
             "description": "todo id to update",
-            "required": true,
+            "required": false,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/ID"
+              "$ref": "#/components/schemas/title"
             }
           }
         ],
@@ -184,8 +197,8 @@
     },
     "/price?sort={pricesort}": {
       "get": {
-        "tags": ["Get All todos from API"],
-        "summary": "Get All todos",
+        "tags": ["Get All sort data from API"],
+        "summary": "Get All data",
         "parameters": [
           {
             "name": "title",
@@ -194,7 +207,7 @@
             "required": true,
             "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/ID"
+              "$ref": "#/components/schemas/name"
             }
           }
         ],

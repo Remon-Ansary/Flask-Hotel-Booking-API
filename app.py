@@ -109,8 +109,9 @@ def titleFilter():
     return {"count ": len(results), "data":results}
 
 
-@app.route('/location/<string:locationValue>', methods=['GET'])
-def locationFilter(locationValue):
+@app.route('/location', methods=['GET'])
+def locationFilter():
+    locationValue = request.args.get('location')
     cars = CarsModel.query.filter_by(location=locationValue).all()
     results = [
         {
