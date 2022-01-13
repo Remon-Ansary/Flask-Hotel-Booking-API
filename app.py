@@ -144,36 +144,5 @@ def locationFilter():
     return {"count": len(results), "data":results}
 
 
-
-@app.route('/price', methods=['GET'])
-def pricedesc():
-    pricesort = request.args.get('sort')
-    if pricesort == 'asc':
-        cars = HotelModel.query.order_by(asc(HotelModel.price)).all()
-        results = [
-            {
-                "title": car.title,
-                "price": car.price,
-                "rating": car.rating,
-                "location": car.location,
-                "amenities": car.amenities,
-                "image": car.image
-            } for car in cars]
-        return {"count": len(results), "data":results}
-    
-    else:
-            cars = HotelModel.query.order_by(desc(HotelModel.price)).all()
-            results = [
-                {
-                    "title": car.title,
-                    "price": car.price,
-                    "rating": car.rating,
-                    "location": car.location,
-                    "amenities": car.amenities,
-                    "image": car.image
-                } for car in cars]
-            return {"count": len(results), "data":results}
-
-
 if __name__ == '__main__':
     app.run(debug=True)

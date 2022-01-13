@@ -45,7 +45,6 @@
           }
         }
       },
-
       "title": {
         "type": "string",
         "properties": {
@@ -94,7 +93,6 @@
           }
         }
       },
-
       "update": {
         "type": "object",
         "properties": {
@@ -145,7 +143,6 @@
       "get": {
         "tags": ["Get All Data"],
         "summary": "Get All Data",
-
         "responses": {
           "200": {
             "description": "OK",
@@ -208,40 +205,6 @@
             }
           }
         ],
-
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/CarsModel"
-            }
-          },
-          "404": {
-            "description": "NOT FOUND",
-            "schema": {
-              "$ref": "#/components/schemas/CarsModel"
-            }
-          }
-        }
-      }
-    },
-    "/price?sort={pricesort}": {
-      "get": {
-        "tags": ["Get All sort data from API"],
-        "summary": "Get All data",
-        "parameters": [
-          {
-            "name": "title",
-            "in": "path",
-            "description": "todo id to update",
-            "required": true,
-            "type": "string",
-            "schema": {
-              "$ref": "#/components/schemas/title"
-            }
-          }
-        ],
-
         "responses": {
           "200": {
             "description": "OK",
