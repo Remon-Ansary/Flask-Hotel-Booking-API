@@ -1,5 +1,6 @@
 from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from sqlalchemy import desc
 from sqlalchemy.sql.expression import asc
@@ -24,6 +25,13 @@ SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
 )
 app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 
+# create db instance
+db = SQLAlchemy(app)
+
+# instanctiate ma
+ma = Marshmallow(app)
+
+
 
 class CarsModel(db.Model):
     __tablename__ = 'newdata'
@@ -44,9 +52,16 @@ class CarsModel(db.Model):
         self.amenities = amenities
         self.image = image
 
-    # def __repr__(self):
-    #     return f"<newdata {self.ttle}>"
 
+# create db schema class
+class CarsModelSchema(ma.Schema):
+    class Meta:
+        fields = ('id', 'title', 'price', 'rating', 'location', 'amenities', 'image')
+
+
+# instantiate schema objects for todolist and todolists
+CarsModel_Schema = CarsModelSchema(many=False)
+CarsModel_Schema = CarsModelSchema(many=True)
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -74,7 +89,6 @@ def handle_cars():
             } for car in cars]
 
         return {"count ": len(results), "data":results}
-
 
 
 @app.route('/title', methods=['GET'])

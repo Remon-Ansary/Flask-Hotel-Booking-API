@@ -22,7 +22,7 @@
   ],
   "components": {
     "schemas": {
-      "TodoList": {
+      "CarsModel": {
         "type": "object",
         "properties": {
           "name": {
@@ -33,14 +33,55 @@
           }
         }
       },
-      "Id": {
-        "type": "integer",
+      "title": {
+        "type": "string",
         "properties": {
           "name": {
-            "type": "integer"
+            "type": "string"
           }
         }
       },
+      "price": {
+        "type": "string",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "rating": {
+        "type": "string",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "location": {
+        "type": "string",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "image": {
+        "type": "string",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "amenities": {
+        "type": "string",
+        "properties": {
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+
       "update": {
         "type": "object",
         "properties": {
@@ -58,7 +99,7 @@
     }
   },
   "paths": {
-    "/todolist": {
+    "/": {
       "post": {
         "tags": ["Add todo to API"],
         "summary": "Add todo",
@@ -68,7 +109,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/TodoList"
+                "$ref": "#/components/schemas/CarsModel"
               }
             }
           }
@@ -77,13 +118,13 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           }
         }
@@ -96,31 +137,31 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           }
         }
       }
     },
-    "/todolist/{id}": {
+    "/title?title={title}": {
       "get": {
-        "tags": ["Get todos from API"],
-        "summary": "Get todos",
+        "tags": ["Get All todos from API"],
+        "summary": "Get All todos",
         "parameters": [
           {
-            "name": "id",
+            "name": "title",
             "in": "path",
             "description": "todo id to update",
             "required": true,
-            "type": "integer",
+            "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/Id"
+              "$ref": "#/components/schemas/ID"
             }
           }
         ],
@@ -129,86 +170,46 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           }
         }
-      },
-
-      "put": {
-        "tags": ["Update todos on API"],
+      }
+    },
+    "/price?sort={pricesort}": {
+      "get": {
+        "tags": ["Get All todos from API"],
+        "summary": "Get All todos",
         "parameters": [
           {
-            "name": "id",
+            "name": "title",
             "in": "path",
             "description": "todo id to update",
             "required": true,
-            "type": "integer",
+            "type": "string",
             "schema": {
-              "$ref": "#/components/schemas/Id"
+              "$ref": "#/components/schemas/ID"
             }
           }
         ],
-        "summary": "Update Todo",
-        "requestBody": {
-          "description": "Update Existing todo On Database",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/update"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/TodoList"
-            }
-          },
-          "404": {
-            "description": "NOT FOUND",
-            "schema": {
-              "$ref": "#/components/schemas/TodoList"
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["Delete todo to API"],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "product id to delete",
-            "required": true,
-            "type": "integer",
-            "schema": {
-              "$ref": "#/components/schemas/Id"
-            }
-          }
-        ],
-        "summary": "Delete todo",
 
         "responses": {
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/TodoList"
+              "$ref": "#/components/schemas/CarsModel"
             }
           }
         }
