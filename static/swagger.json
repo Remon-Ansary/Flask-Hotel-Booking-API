@@ -186,6 +186,26 @@
             "schema": {
               "$ref": "#/components/schemas/title"
             }
+          },
+          {
+            "name": "amenities",
+            "in": "query",
+            "description": "todo id to update",
+            "required": false,
+            "type": "string",
+            "schema": {
+              "$ref": "#/components/schemas/title"
+            }
+          },
+          {
+            "name": "price",
+            "in": "query",
+            "description": "todo id to update",
+            "required": false,
+            "type": "string",
+            "schema": {
+              "$ref": "#/components/schemas/title"
+            }
           }
         ],
 
