@@ -98,7 +98,9 @@ def titleFilter():
     locationValue = request.args.get('location')
     amenitiesValue = request.args.get('amenities')
     priceValue = request.args.get('price')
+    priceValue1 = request.args.get('pricefilter')
     amenities = "%{}%".format(amenitiesValue)
+    priceValueformat = "%{}%".format(priceValue1)
     if None not in (titlevalue, locationValue):
         cars = HotelModel.query.filter_by(title=titlevalue, location=locationValue).all()
     elif titlevalue is not None:
@@ -107,6 +109,8 @@ def titleFilter():
         cars = HotelModel.query.filter_by(location=locationValue).all()
     elif amenitiesValue is not None:
         cars = HotelModel.query.filter(HotelModel.amenities.like(amenities)).all()
+    elif priceValue1 is not None:
+        cars = HotelModel.query.filter(HotelModel.price.like(priceValueformat)).all()
     elif priceValue == 'asc':
          cars = HotelModel.query.order_by(asc(HotelModel.price)).all()
     elif priceValue == 'desc':

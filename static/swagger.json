@@ -167,7 +167,7 @@
           {
             "name": "title",
             "in": "query",
-            "description": "todo id to update",
+            "description": "Search by title",
             "required": false,
             "type": "string",
             "schema": {
@@ -177,7 +177,7 @@
           {
             "name": "location",
             "in": "query",
-            "description": "todo id to update",
+            "description": "search by location",
             "required": false,
             "type": "string",
             "schema": {
@@ -187,7 +187,18 @@
           {
             "name": "amenities",
             "in": "query",
-            "description": "todo id to update",
+            "description": "Search by amenities",
+            "required": false,
+            "type": "string",
+            "schema": {
+              "$ref": "#/components/schemas/title"
+            }
+          },
+
+          {
+            "name": "pricefilter",
+            "in": "query",
+            "description": "Search by price",
             "required": false,
             "type": "string",
             "schema": {
@@ -197,7 +208,7 @@
           {
             "name": "price",
             "in": "query",
-            "description": "todo id to update",
+            "description": "Sort by price asc/desc",
             "required": false,
             "type": "string",
             "schema": {
