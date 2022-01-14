@@ -16,7 +16,7 @@ app = Flask(__name__)
 
 thisissecret = secrets.token_hex(16) 
 
-app.config['SECRET_KEY']='thisissecret'
+app.config['KEY']='thisissecret'
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:root@localhost:5432/Scrapydata1"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -61,8 +61,6 @@ class HotelModel(db.Model):
         self.location = location
         self.amenities = amenities
         self.image = image
-    
-    
 
 class Users(db.Model):
    id = db.Column(db.Integer, primary_key=True)
@@ -77,7 +75,6 @@ class Users(db.Model):
         self.password = password
         self.admin = admin
    
-   
 
 def token_required(f):
    @wraps(f)
@@ -89,7 +86,7 @@ def token_required(f):
        if not token:
            return jsonify({'message': 'a valid token is missing'})
        try:
-           data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+           data = jwt.decode(token, app.config['KEY'], algorithms=["HS256"])
            current_user = Users.query.filter_by(public_id=data['public_id']).first()
        except:
            return jsonify({'message': 'token is invalid'})
@@ -100,49 +97,45 @@ def token_required(f):
 
 @app.route('/login', methods=['POST']) 
 def login_user():
-
     auth = request.get_json()
     if not auth or not auth['name'] or not auth['password']: 
         return make_response('could not verify', 401, {'Authentication': 'login required"'})   
     user = Users.query.filter_by(name=auth['name']).first()  
     if check_password_hash(user.password, auth['password']):
-        token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, app.config['SECRET_KEY'], "HS256")
+        token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, app.config['KEY'], "HS256")
         return jsonify({'token' : token})
     return make_response('could not verify',  401, {'Authentication': '"login required"'})
 
 @app.route('/register', methods=['POST'])
-
 def signup_user(): 
-  if request.method == 'POST':
-        if request.is_json:
-            data = request.get_json()
-            hashed_password = generate_password_hash(data['password'], method='sha256')
-            new_user = Users(public_id=str(uuid.uuid4()), name=data['name'], password=hashed_password, admin=False)
-            db.session.add(new_user) 
-            db.session.commit()   
-            return jsonify({'message': 'registered successfully'})
+    auth = request.get_json()
+    if not auth or not auth['name'] or not auth['password']: 
+        return make_response('could not verify', 401, {'Authentication': 'login required"'})   
+    hashed_password = generate_password_hash(auth['password'], method='sha256')
+    new_user = Users(public_id=str(uuid.uuid4()), name=auth['name'], password=hashed_password, admin=False)
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message' : 'new user created'})
+ 
 
 @app.route('/users', methods=['GET'])
 def get_all_users(): 
- 
-   users = Users.query.all()
-   result = []  
-   for user in users:  
-       user_data = {}  
-       user_data['public_id'] = user.public_id 
-       user_data['name'] = user.name
-       user_data['password'] = user.password
-       user_data['admin'] = user.admin
-     
-       result.append(user_data)  
-   return jsonify({'users': result})
-
+    users = Users.query.all()
+    results = [
+        {
+        "public_id": user.public_id,
+        "name": user.name,
+        "password": user.password,
+        "admin": user.admin,
+              
+    } for user in users]
+    return {"count ": len(users), "data":results}
+    
 
 # create db schema class
 class HotelModelSchema(ma.Schema):
     class Meta:
         fields = ('id', 'title', 'price', 'rating', 'location', 'amenities', 'image')
-
 
 # instantiate schema objects for todolist and todolists
 HotelModel_Schema = HotelModelSchema(many=False)
@@ -150,7 +143,7 @@ HotelModel_Schema = HotelModelSchema(many=True)
 
 
 @app.route('/', methods=['POST', 'GET'])
-@token_required
+# @token_required
 def handle_hotels():
     if request.method == 'POST':
         if request.is_json:
@@ -179,51 +172,69 @@ def handle_hotels():
     
 
 @app.route('/find', methods=['GET'])
-def titleFilter():
+# def titleFilter():
+#     titlevalue = request.args.get('title')
+#     locationValue = request.args.get('location')
+#     amenitiesValue = request.args.get('amenities')
+#     priceValue = request.args.get('price')
+#     priceValue1 = request.args.get('pricefilter')
+#     amenities = "%{}%".format(amenitiesValue)
+#     priceValueformat = "%{}%".format(priceValue1)
+#     if None not in (titlevalue, locationValue , amenitiesValue):
+#         hotels = HotelModel.query.filter(HotelModel.title==titlevalue ,HotelModel.location==locationValue,HotelModel.amenities.like(amenities)).all() 
+#     elif None not in (priceValue1, locationValue, amenitiesValue):
+#         hotels = HotelModel.query.filter(HotelModel.price.like(priceValueformat),HotelModel.location==locationValue,HotelModel.amenities.like(amenities)).all()
+#     elif None not in (titlevalue, locationValue , amenitiesValue):
+#         hotels = HotelModel.query.filter(HotelModel.title==titlevalue ,HotelModel.location==locationValue,HotelModel.amenities.like(amenities)).all()        
+#     elif titlevalue is not None:
+#         hotels = HotelModel.query.filter_by(title=titlevalue).all()
+#     elif locationValue is not None:
+#         hotels = HotelModel.query.filter_by(location=locationValue).all()
+#     elif amenitiesValue is not None:
+#         hotels = HotelModel.query.filter(HotelModel.amenities.like(amenities)).all()
+#     elif priceValue1 is not None:
+#         hotels = HotelModel.query.filter(HotelModel.price.like(priceValueformat)).all()
+#     elif priceValue == 'asc':
+#          hotels = HotelModel.query.order_by(asc(HotelModel.price)).all()
+#     elif priceValue == 'desc':
+#         hotels = HotelModel.query.order_by(desc(HotelModel.price)).all()
+#     else:
+#         hotels = HotelModel.query.all()
     
+#     results = [
+#     {
+#         "title": hotel.title,
+#         "price": hotel.price,
+#         "rating": hotel.rating,
+#         "location": hotel.location,
+#         "amenities": hotel.amenities,
+#         "image": hotel.image
+#     } for hotel in hotels]
+
+#     return {"count ": len(results), "data":results}
+def titleFilter():
     titlevalue = request.args.get('title')
     locationValue = request.args.get('location')
     amenitiesValue = request.args.get('amenities')
     priceValue = request.args.get('price')
     priceValue1 = request.args.get('pricefilter')
     amenities = "%{}%".format(amenitiesValue)
-    priceValueformat = "%{}%".format(priceValue1)
-    if None not in (titlevalue, locationValue , amenitiesValue):
-        hotels = HotelModel.query.filter(HotelModel.title==titlevalue ,HotelModel.location==locationValue,HotelModel.amenities.like(amenities)).all() 
-    elif None not in (priceValue1, locationValue, amenitiesValue):
-        hotels = HotelModel.query.filter(HotelModel.price.like(priceValueformat),HotelModel.location==locationValue,HotelModel.amenities.like(amenities)).all()     
-    elif titlevalue is not None:
-        hotels = HotelModel.query.filter_by(title=titlevalue).all()
-    elif locationValue is not None:
-        hotels = HotelModel.query.filter_by(location=locationValue).all()
-    elif amenitiesValue is not None:
-        hotels = HotelModel.query.filter(HotelModel.amenities.like(amenities)).all()
-    elif priceValue1 is not None:
-        hotels = HotelModel.query.filter(HotelModel.price.like(priceValueformat)).all()
-    elif priceValue == 'asc':
-         hotels = HotelModel.query.order_by(asc(HotelModel.price)).all()
-    elif priceValue == 'desc':
-        hotels = HotelModel.query.order_by(desc(HotelModel.price)).all()
-    else:
-        hotels = HotelModel.query.all()
-    
-    results = [
-    {
-        "title": hotel.title,
-        "price": hotel.price,
-        "rating": hotel.rating,
-        "location": hotel.location,
-        "amenities": hotel.amenities,
-        "image": hotel.image
-    } for hotel in hotels]
+    location = "%{}%".format(locationValue)
+    title = "%{}%".format(titlevalue)
+    price = "%{}%".format(priceValue)
+    price1 = "%{}%".format(priceValue1)
+    if titlevalue is None:
+        title = "%"
+    if locationValue is None:
+        location = "%"
+    if amenitiesValue is None:
+        amenities = "%"
+    if priceValue is None:
+        price = "%"
+    if priceValue1 is None:
+        price1 = "%"
 
-    return {"count ": len(results), "data":results}
-
-
-@app.route('/location', methods=['GET'])
-def locationFilter():
-    locationValue = request.args.get('location')
-    hotels = HotelModel.query.filter_by(location=locationValue).all()
+    hotels = HotelModel.query.filter(HotelModel.title.like(title)).filter(HotelModel.location.like(location)).filter(HotelModel.amenities.like(amenities)).filter(HotelModel.price.like(price)).filter(HotelModel.price.like(price1)).all()
     results = [
         {
             "title": hotel.title,
@@ -234,7 +245,24 @@ def locationFilter():
             "image": hotel.image
         } for hotel in hotels]
 
-    return {"count": len(results), "data":results}
+    return {"count ": len(results), "data":results}
+
+
+# @app.route('/location', methods=['GET'])
+# def locationFilter():
+#     locationValue = request.args.get('location')
+#     hotels = HotelModel.query.filter_by(location=locationValue).all()
+#     results = [
+#         {
+#             "title": hotel.title,
+#             "price": hotel.price,
+#             "rating": hotel.rating,
+#             "location": hotel.location,
+#             "amenities": hotel.amenities,
+#             "image": hotel.image
+#         } for hotel in hotels]
+
+#     return {"count": len(results), "data":results}
 
 
 if __name__ == '__main__':
