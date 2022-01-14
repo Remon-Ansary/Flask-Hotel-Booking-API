@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request,jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
@@ -9,9 +9,11 @@ from flask_swagger_ui import get_swaggerui_blueprint
 import uuid # for public id
 from  werkzeug.security import generate_password_hash, check_password_hash
 import jwt
+import secrets
 from datetime import datetime, timedelta
 from functools import wraps
 app = Flask(__name__)
+app.config['SECRET_KEY']='004f2af45d3a4e161a7dd2d17fdae47f'
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:root@localhost:5432/Scrapydata1"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -56,6 +58,87 @@ class HotelModel(db.Model):
         self.location = location
         self.amenities = amenities
         self.image = image
+    
+    
+
+class Users(db.Model):
+   id = db.Column(db.Integer, primary_key=True)
+   public_id = db.Column(db.String())
+   name = db.Column(db.String())
+   password = db.Column(db.String())
+   admin = db.Column(db.Boolean)
+   def __init__(self, public_id, name, password, admin):
+        self.public_id = public_id
+        self.name = name
+        self.password = password
+        self.admin = admin
+   
+   
+
+def token_required(f):
+   @wraps(f)
+   def decorator(*args, **kwargs):
+       token = None
+       if 'x-access-tokens' in request.headers:
+           token = request.headers['x-access-tokens']
+ 
+       if not token:
+           return jsonify({'message': 'a valid token is missing'})
+       try:
+           data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+           current_user = Users.query.filter_by(public_id=data['public_id']).first()
+       except:
+           return jsonify({'message': 'token is invalid'})
+ 
+       return f(current_user, *args, **kwargs)
+   return decorator
+
+
+
+
+
+@app.route('/login', methods=['POST']) 
+def login_user():
+   auth = request.authorization  
+   if not auth or not auth.username or not auth.password: 
+       return make_response('could not verify', 401, {'Authentication': 'login required"'})   
+ 
+   user = Users.query.filter_by(name=auth.username).first()
+   print(user)  
+   if check_password_hash(user.password, auth.password):
+       token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, app.config['SECRET_KEY'], "HS256")
+ 
+       return jsonify({'token' : token})
+ 
+   return make_response('could not verify',  401, {'Authentication': '"login required"'})
+
+@app.route('/register', methods=['POST'])
+
+def signup_user(): 
+  if request.method == 'POST':
+        if request.is_json:
+            data = request.get_json()
+            hashed_password = generate_password_hash(data['password'], method='sha256')
+ 
+            new_user = Users(public_id=str(uuid.uuid4()), name=data['name'], password=hashed_password, admin=False)
+            db.session.add(new_user) 
+            db.session.commit()   
+            return jsonify({'message': 'registered successfully'})
+
+@app.route('/users', methods=['GET'])
+def get_all_users(): 
+ 
+   users = Users.query.all()
+   result = []  
+   for user in users:  
+       user_data = {}  
+       user_data['public_id'] = user.public_id 
+       user_data['name'] = user.name
+       user_data['password'] = user.password
+       user_data['admin'] = user.admin
+     
+       result.append(user_data)  
+   return jsonify({'users': result})
 
 
 # create db schema class
@@ -70,6 +153,7 @@ HotelModel_Schema = HotelModelSchema(many=True)
 
 
 @app.route('/', methods=['POST', 'GET'])
+@token_required
 def handle_hotels():
     if request.method == 'POST':
         if request.is_json:
@@ -80,6 +164,7 @@ def handle_hotels():
             return {"message": f"hotel {new_hotel.title} has been created successfully."}
         else:
             return {"error": "The request payload is not in JSON format"}
+      
 
     elif request.method == 'GET':
         hotels = HotelModel.query.all()
