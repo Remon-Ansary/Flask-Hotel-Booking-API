@@ -41,8 +41,6 @@ db = SQLAlchemy(app)
 # instanctiate ma
 ma = Marshmallow(app)
 
-
-
 class HotelModel(db.Model):
     __tablename__ = 'newdata'
 
@@ -143,7 +141,7 @@ HotelModel_Schema = HotelModelSchema(many=True)
 
 
 @app.route('/', methods=['POST', 'GET'])
-# @token_required
+@token_required
 def handle_hotels():
     if request.method == 'POST':
         if request.is_json:
@@ -246,6 +244,7 @@ def titleFilter():
         } for hotel in hotels]
 
     return {"count ": len(results), "data":results}
+
 
 
 # @app.route('/location', methods=['GET'])
