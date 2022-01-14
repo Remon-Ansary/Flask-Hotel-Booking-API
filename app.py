@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from sqlalchemy import desc
+from sqlalchemy import or_
 from sqlalchemy.sql.expression import asc
 from flask_swagger_ui import get_swaggerui_blueprint
 import uuid # for public id
@@ -105,9 +106,10 @@ def titleFilter():
     priceValue1 = request.args.get('pricefilter')
     amenities = "%{}%".format(amenitiesValue)
     priceValueformat = "%{}%".format(priceValue1)
-    if None not in (titlevalue, locationValue):
-        hotels = HotelModel.query.filter_by(title=titlevalue,location=locationValue,price = priceValue).all()
-    
+    if None not in (titlevalue, locationValue , amenitiesValue):
+        hotels = HotelModel.query.filter(HotelModel.title==titlevalue ,HotelModel.location==locationValue,HotelModel.amenities.like(amenities)).all() 
+    elif None not in (priceValue1, locationValue, amenitiesValue):
+        hotels = HotelModel.query.filter(HotelModel.price.like(priceValueformat),HotelModel.location==locationValue,HotelModel.amenities.like(amenities)).all()     
     elif titlevalue is not None:
         hotels = HotelModel.query.filter_by(title=titlevalue).all()
     elif locationValue is not None:
