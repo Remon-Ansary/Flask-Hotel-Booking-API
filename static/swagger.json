@@ -16,12 +16,20 @@
       "description": "Test API"
     }
   ],
+
   "servers": [
     {
       "url": "/"
     }
   ],
   "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
     "schemas": {
       "HotelModel": {
         "type": "object",
@@ -176,13 +184,13 @@
           "200": {
             "description": "OK",
             "schema": {
-              "$ref": "#/components/schemas/register"
+              "$ref": "#/components/schemas/login"
             }
           },
           "404": {
             "description": "NOT FOUND",
             "schema": {
-              "$ref": "#/components/schemas/register"
+              "$ref": "#/components/schemas/login"
             }
           }
         }
@@ -190,6 +198,11 @@
     },
     "/find": {
       "get": {
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "tags": ["Get All Search data from API"],
         "summary": "Get All data",
         "parameters": [

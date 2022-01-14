@@ -10,10 +10,13 @@ import uuid # for public id
 from  werkzeug.security import generate_password_hash, check_password_hash
 import jwt
 import secrets
-from datetime import datetime, timedelta
+import datetime
 from functools import wraps
 app = Flask(__name__)
-app.config['SECRET_KEY']='004f2af45d3a4e161a7dd2d17fdae47f'
+
+thisissecret = secrets.token_hex(16) 
+
+app.config['SECRET_KEY']='thisissecret'
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:root@localhost:5432/Scrapydata1"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
@@ -67,6 +70,7 @@ class Users(db.Model):
    name = db.Column(db.String())
    password = db.Column(db.String())
    admin = db.Column(db.Boolean)
+
    def __init__(self, public_id, name, password, admin):
         self.public_id = public_id
         self.name = name
@@ -79,8 +83,8 @@ def token_required(f):
    @wraps(f)
    def decorator(*args, **kwargs):
        token = None
-       if 'x-access-tokens' in request.headers:
-           token = request.headers['x-access-tokens']
+       if 'access-token' in request.headers:
+           token = request.headers['access-token']
  
        if not token:
            return jsonify({'message': 'a valid token is missing'})
@@ -94,23 +98,17 @@ def token_required(f):
    return decorator
 
 
-
-
-
 @app.route('/login', methods=['POST']) 
 def login_user():
-   auth = request.authorization  
-   if not auth or not auth.username or not auth.password: 
-       return make_response('could not verify', 401, {'Authentication': 'login required"'})   
- 
-   user = Users.query.filter_by(name=auth.username).first()
-   print(user)  
-   if check_password_hash(user.password, auth.password):
-       token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, app.config['SECRET_KEY'], "HS256")
- 
-       return jsonify({'token' : token})
- 
-   return make_response('could not verify',  401, {'Authentication': '"login required"'})
+
+    auth = request.get_json()
+    if not auth or not auth['name'] or not auth['password']: 
+        return make_response('could not verify', 401, {'Authentication': 'login required"'})   
+    user = Users.query.filter_by(name=auth['name']).first()  
+    if check_password_hash(user.password, auth['password']):
+        token = jwt.encode({'public_id' : user.public_id, 'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=45)}, app.config['SECRET_KEY'], "HS256")
+        return jsonify({'token' : token})
+    return make_response('could not verify',  401, {'Authentication': '"login required"'})
 
 @app.route('/register', methods=['POST'])
 
@@ -119,7 +117,6 @@ def signup_user():
         if request.is_json:
             data = request.get_json()
             hashed_password = generate_password_hash(data['password'], method='sha256')
- 
             new_user = Users(public_id=str(uuid.uuid4()), name=data['name'], password=hashed_password, admin=False)
             db.session.add(new_user) 
             db.session.commit()   
