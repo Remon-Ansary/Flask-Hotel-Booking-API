@@ -29,11 +29,6 @@
         "bearerFormat": "JWT"
       }
     },
-    "security": [
-      {
-        "jwt": []
-      }
-    ],
 
     "schemas": {
       "HotelModel": {
@@ -124,7 +119,7 @@
         "tags": ["Get All Data"],
         "security": [
           {
-            "Bearer": []
+            "bearerAuth": []
           }
         ],
         "summary": "Get All Data",
