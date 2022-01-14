@@ -206,7 +206,7 @@
         }
       }
     },
-    "/find": {
+    "/search": {
       "get": {
         "tags": ["Get All Search data from API"],
         "summary": "Get All data",
@@ -243,9 +243,9 @@
           },
 
           {
-            "name": "pricefilter",
+            "name": "price1",
             "in": "query",
-            "description": "Search by price",
+            "description": "Sort by price asc/desc",
             "required": false,
             "type": "string",
             "schema": {
@@ -255,7 +255,7 @@
           {
             "name": "price",
             "in": "query",
-            "description": "Sort by price asc/desc",
+            "description": "Search by price",
             "required": false,
             "type": "string",
             "schema": {

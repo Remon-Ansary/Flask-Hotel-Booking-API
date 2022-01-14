@@ -77,6 +77,8 @@ class Users(db.Model):
 def token_required(f):
    @wraps(f)
    def decorator(*args, **kwargs):
+       print("----------------------")
+       print(request.args['token'])
        token = None
        if 'access-token' in request.headers:
            token = request.headers['access-token']
@@ -85,12 +87,15 @@ def token_required(f):
            return jsonify({'message': 'a valid token is missing'})
        try:
            data = jwt.decode(token, app.config['KEY'], algorithms=["HS256"])
+           print(data)
            current_user = Users.query.filter_by(public_id=data['public_id']).first()
        except:
            return jsonify({'message': 'token is invalid'})
  
        return f(current_user, *args, **kwargs)
    return decorator
+
+
 
 
 @app.route('/login', methods=['POST']) 
@@ -141,7 +146,7 @@ HotelModel_Schema = HotelModelSchema(many=True)
 
 
 @app.route('/', methods=['POST', 'GET'])
-@token_required
+# @token_required
 def handle_hotels():
     if request.method == 'POST':
         if request.is_json:
@@ -169,7 +174,7 @@ def handle_hotels():
         return {"count ": len(results), "data":results}
     
 
-@app.route('/find', methods=['GET'])
+@app.route('/search', methods=['GET'])
 # def titleFilter():
 #     titlevalue = request.args.get('title')
 #     locationValue = request.args.get('location')
@@ -231,8 +236,12 @@ def titleFilter():
         price = "%"
     if priceValue1 is None:
         price1 = "%"
-
-    hotels = HotelModel.query.filter(HotelModel.title.like(title)).filter(HotelModel.location.like(location)).filter(HotelModel.amenities.like(amenities)).filter(HotelModel.price.like(price)).filter(HotelModel.price.like(price1)).all()
+    if priceValue1 == 'asc':
+        hotels = HotelModel.query.filter(HotelModel.title.like(title),HotelModel.location.like(location),HotelModel.amenities.like(amenities),HotelModel.price.like(price)).order_by(asc(HotelModel.price1)).all()
+    elif priceValue1 == 'desc':
+        hotels = HotelModel.query.filter(HotelModel.title.like(title),HotelModel.location.like(location),HotelModel.amenities.like(amenities),HotelModel.price.like(price)).order_by(desc(HotelModel.price1)).all()
+    else:
+        hotels = HotelModel.query.filter(HotelModel.title.like(title),HotelModel.location.like(location),HotelModel.amenities.like(amenities),HotelModel.price.like(price)).all()
     results = [
         {
             "title": hotel.title,
