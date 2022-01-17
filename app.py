@@ -70,26 +70,6 @@ class Users(db.Model):
         self.name = name
         self.password = password
 
-# def token_required(f):
-#    @wraps(f)
-#    def decorator(*args, **kwargs):
-#     #    print(request.args['token'])
-#        token = None
-#        if 'access-token' in request.headers:
-#            token = request.headers['access-token']
- 
-#        if not token:
-#            return jsonify({'message': 'a valid token is missing'})
-#        try:
-#            data = jwt.decode(token, app.config['KEY'], algorithms=["HS256"])
-#            print(data)
-#            current_user = Users.query.filter_by(public_id=data['public_id']).first()
-#        except:
-#            return jsonify({'message': 'token is invalid'})
- 
-#        return f(current_user, *args, **kwargs)
-#    return decorator
-
 token = ''
 @app.route('/login', methods=['POST']) 
 def login_user():
