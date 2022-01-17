@@ -9,11 +9,10 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-
   "tags": [
     {
-      "name": "Products API",
-      "description": "Test API"
+      "name": "Hotel Booking API",
+      "description": "Hotel Booking API"
     }
   ],
   "servers": [
@@ -22,14 +21,6 @@
     }
   ],
   "components": {
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
-      }
-    },
-
     "schemas": {
       "HotelModel": {
         "type": "object",
@@ -65,9 +56,6 @@
           },
           "password": {
             "type": "string"
-          },
-          "admin": {
-            "type": "boolean"
           }
         }
       },
@@ -85,66 +73,12 @@
     }
   },
   "paths": {
-    "/": {
-      "post": {
-        "tags": ["Add Data"],
-        "summary": "Add Data",
-        "requestBody": {
-          "description": "Post new data to",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/HotelModel"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/HotelModel"
-            }
-          },
-          "404": {
-            "description": "NOT FOUND",
-            "schema": {
-              "$ref": "#/components/schemas/HotelModel"
-            }
-          }
-        }
-      },
-      "get": {
-        "tags": ["Get All Data"],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "summary": "Get All Data",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "$ref": "#/components/schemas/HotelModel"
-            }
-          },
-          "404": {
-            "description": "NOT FOUND",
-            "schema": {
-              "$ref": "#/components/schemas/HotelModel"
-            }
-          }
-        }
-      }
-    },
     "/register": {
       "post": {
-        "tags": ["Add Data"],
-        "summary": "Add Data",
+        "tags": ["Register"],
+        "summary": "Register",
         "requestBody": {
-          "description": "Post new data to",
+          "description": "Register here",
           "required": true,
           "content": {
             "application/json": {
@@ -172,15 +106,10 @@
     },
     "/login": {
       "post": {
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "tags": ["Add Data"],
-        "summary": "Add Data",
+        "tags": ["Login"],
+        "summary": "Login in here",
         "requestBody": {
-          "description": "Post new data to",
+          "description": "Log in ",
           "required": true,
           "content": {
             "application/json": {
@@ -208,8 +137,8 @@
     },
     "/search": {
       "get": {
-        "tags": ["Get All Search data from API"],
-        "summary": "Get All data",
+        "tags": ["Search data from API"],
+        "summary": "Search data",
         "parameters": [
           {
             "name": "title",
@@ -224,7 +153,7 @@
           {
             "name": "location",
             "in": "query",
-            "description": "search by location",
+            "description": "Search by location",
             "required": false,
             "type": "string",
             "schema": {
@@ -241,9 +170,8 @@
               "$ref": "#/components/schemas/HotelModel/properties/amenities"
             }
           },
-
           {
-            "name": "price1",
+            "name": "pricefilter",
             "in": "query",
             "description": "Sort by price asc/desc",
             "required": false,
@@ -263,6 +191,37 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/components/schemas/HotelModel"
+            }
+          },
+          "404": {
+            "description": "NOT FOUND",
+            "schema": {
+              "$ref": "#/components/schemas/HotelModel"
+            }
+          }
+        }
+      }
+    },
+    "/post": {
+      "post": {
+        "tags": ["Add Data"],
+        "summary": "Add Data",
+        "requestBody": {
+          "description": "Post new data to",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HotelModel"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
