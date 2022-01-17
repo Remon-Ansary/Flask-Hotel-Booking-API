@@ -41,6 +41,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:your_password@loc
 
 # Running the project
 
+- Atfirst please install and active your virtual environment:
+- pip install virtualenv
+  Once installed, you can create a virtual environment with:
+
+- virtualenv [directory]
+
+You can activate using following commands:
+
+- env\Scripts\activate
+
 After completing the database setup and installing the packages, you can run the project using the following command:
 
 - python app.py
@@ -60,9 +70,3 @@ After that you will get 45 seconds of access time to search or post data after t
 
 You can post data into database:
 !["upper portion"](https://i.ibb.co/gyp5nG2/addd.jpg)
-
-source env/bin/activate
-flask db init
-flask db migrate
-flask db upgrade
-env\Scripts\activate
