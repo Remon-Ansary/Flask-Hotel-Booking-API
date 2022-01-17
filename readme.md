@@ -35,7 +35,9 @@ After installing the packages please create a database. Provide your database na
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:your_password@localhost:5432/database_name"
 
-- You can also do this by creating a database named 'newdata' and importing the mydb.sql file in pgAdmin4.
+- You can do this by creating a database named 'newdata' and importing the newdata.sql file in pgAdmin4.
+
+* You also need to import users.sql file into your database the table name will be users
 
 # Running the project
 
