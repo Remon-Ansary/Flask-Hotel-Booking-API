@@ -41,15 +41,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://postgres:your_password@loc
 
 # Running the project
 
-- Atfirst please install and active your virtual environment:
-- pip install virtualenv
-  Once installed, you can create a virtual environment with:
+#### Atfirst please install and active your virtual environment:
 
-- virtualenv [directory]
+- pip3 install virtualenv
 
-You can activate using following commands:
+Create a virtual environment
 
-- env\Scripts\activate
+- virtualenv venv
+
+Active your virtual environment
+
+- source venv/bin/activate
 
 After completing the database setup and installing the packages, you can run the project using the following command:
 
